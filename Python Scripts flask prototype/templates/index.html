@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<style>
+.button {
+  background-color: grey; 
+  border: none;
+  color: white;
+    
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+    border-radius: 20%;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+</style>
+</head>
+<body style="background-image: url('/static/img_girl.jpg');">
+
+        <h1 style="color:#f1b477;font-family:verdana;font-size:200%;text-align:center; ">Parkinson Disease Detection Using Audio</h1>
+    <h2 style="color:grey;font-family:verdana;font-size:150%;text-align:center; ">Start with recording your voice</h1>
+        <form method="post" id="recording">
+        <center> 
+            <label style="color:grey;font-family:verdana;font-size:150%;text-align:center; ">Say aaah for 10 sec : </label>
+                <button class="button">Record</button>
+           </center>
+        </form>
+        <h1 id="countdown" style="color:#f1b477;font-family:verdana;font-size:150%;text-align:center; "></h1>
+       <h2 id='square' style="color:#f1b477;font-family:verdana;font-size:100%;text-align:center; "></h2>
+        
+        <form method="post" id="processing">
+            <center> <button class="button">Process the Audio file</button></center>
+            <h1 id='process' style="color:#f1b477;font-family:verdana;font-size:150%;text-align:center; "></h1>
+         
+            <div id="wait" style="display:none;color:#f1b477;width:69px;height:89px;position:absolute;top:50%;left:47%;padding:2px;font-family:verdana;font-size:130%;"><img src='/static/loading.gif' width="64" height="64" /><br style='top:50%;left:47%;'>Processing..</div>
+        </form>   
+            
+        <script>
+            $('#recording').on('submit', function(e){
+                 
+                var timeleft = 10;
+                var downloadTimer = setInterval(function(){
+                document.getElementById("countdown").innerHTML = timeleft + " seconds remaining";
+                timeleft -= 1;
+                if(timeleft <= 0){
+                clearInterval(downloadTimer);
+                document.getElementById("countdown").innerHTML = "Recording completed...Please Process Audio file"
+                      }
+                }, 1000);
+                e.preventDefault();
+                $.ajax({
+                    url: 'http://127.0.0.1:5000/square/',
+                    method: 'POST',
+                    success: function(data) {
+                        $('#square').html('')
+                    }
+                });
+                
+            });
+            $('#processing').on('submit', function(e){
+                  $("#process").css("display", "none");
+                $("#wait").css("display", "block");
+                e.preventDefault();
+                $.ajax({
+                    url: 'http://127.0.0.1:5000/process/',
+                    method: 'POST',
+                      
+                    success: function(data) {
+                       $("#wait").css("display", "none");
+                                    $('#process').html(data['df'])
+                         $("#process").css("display", "block");
+                        
+                    }
+                    
+                });
+                
+            });
+</script>
+</html>
+
+
+
+
